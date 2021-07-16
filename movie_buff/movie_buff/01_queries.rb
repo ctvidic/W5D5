@@ -5,8 +5,11 @@ def it_was_ok
   #
   # We can use ranges (a..b) inside a where method.
   #
-  # Find the id, title, and score of all movies with scores between 2 and 3
-
+  # Find the id, title, and score of all 
+  #movies with scores between 2 and 3
+    Movie
+      .select('movies.id, movies.title, movies.score')
+      .where('movies.score BETWEEN 2 AND 3')
 end
 
 def harrison_ford
@@ -16,11 +19,16 @@ def harrison_ford
   #   .joins(:movies)
   #   .where(movies: { title: 'Blade Runner' })
   #
-  # It's possible to join based on active record relations defined in models.
+  # It's possible to join based on active record 
+  #relations defined in models.
   #
-  # Find the id and title of all movies in which Harrison Ford
+  # Find the id and title of all movies 
+  #in which Harrison Ford
   # appeared but not as a lead actor
-
+  Movie
+    .select('movies.id, movies.title')
+    .joins(:actors)
+    .where('actors.name = \'Harrison Ford\' AND castings.ord != 1')
 end
 
 def biggest_cast
@@ -32,12 +40,18 @@ def biggest_cast
   #   .order('COUNT(movies.id) DESC')
   #   .limit(1)
   #
-  # Sometimes we need to use aggregate SQL functions like COUNT, MAX, and AVG.
+  # Sometimes we need to use aggregate 
+  #SQL functions like COUNT, MAX, and AVG.
   # Often these are combined with group.
   #
-  # Find the id and title of the 3 movies with the
-  # largest casts (i.e most actors)
-
+  # Find the id and title of the 3 movies 
+  #with the largest casts (i.e most actors)
+    Movie
+      .select('movies.id, movies.title')
+      .joins(:actors)
+      .group('movies.id')
+      .order('COUNT(actors.name) DESC')
+      .limit(3)
 end
 
 def directed_by_one_of(them)
@@ -52,7 +66,10 @@ def directed_by_one_of(them)
   # Movie.where(yr: years)
   #
   # Find the id and title of all the movies directed by one of 'them'.
-
+    Movie
+      .select('movies.id, movies.title')
+      .joins(:director)
+      .where('actors.name IN (?)', them)
 end
 
 def movie_names_before_1940
@@ -66,5 +83,8 @@ def movie_names_before_1940
   # improve performace for larger queries.
   #
   # Use pluck to find the title of all movies made before 1940.
-
+    Movie
+      .select('movies.title')
+      .where('yr < 1940')
+      .pluck('movies.title')
 end
